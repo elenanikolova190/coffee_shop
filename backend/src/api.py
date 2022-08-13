@@ -28,21 +28,6 @@ CORS(app)
     returns status code 200 and json {"success": True, "drinks": drinks} where drinks is the list of drinks
         or appropriate status code indicating reason for failure
 '''
-@app.route('/drinks')
-def get_drinks():
-    try:
-        drinks = Drink.query.all().short()
-        # abort if no drinks in DB
-        if (len(drinks) == 0):
-            abort(404)
-
-        return jsonify({
-            "success": True,
-            "drinks": drinks
-        })
-    except:
-        abort(404)
-
 
 
 '''
