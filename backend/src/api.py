@@ -17,28 +17,49 @@ CORS(app)
 !! NOTE THIS MUST BE UNCOMMENTED ON FIRST RUN
 !! Running this function will add one
 '''
-# db_drop_and_create_all()
+#db_drop_and_create_all()
 
+# ----------------------------------
 # ROUTES
-'''
-@TODO implement endpoint
-    GET /drinks
-        it should be a public endpoint
-        it should contain only the drink.short() data representation
-    returns status code 200 and json {"success": True, "drinks": drinks} where drinks is the list of drinks
-        or appropriate status code indicating reason for failure
-'''
+# ----------------------------------
+
+# GET Route handler for getting list of drinks
+@app.route('/drinks')
+def get_drinks():
+    # get all drinks
+    drinks = Drink.query.all()
+    if len(drinks) == 0:
+        abort(404)
+
+    # format using .short()
+    available_drinks = [drink.short() for drink in drinks]
+
+    # return drinks
+    return jsonify({
+        'success': True,
+        'drinks': available_drinks
+    })
 
 
-'''
-@TODO implement endpoint
-    GET /drinks-detail
-        it should require the 'get:drinks-detail' permission
-        it should contain the drink.long() data representation
-    returns status code 200 and json {"success": True, "drinks": drinks} where drinks is the list of drinks
-        or appropriate status code indicating reason for failure
-'''
+# GET Route handler for drinks details - requires permission
+@app.route('/drinks-detail')
+@requires_auth('get:drinks-detail')
+def get_drinks_detail(jwt):
+    # get all drinks
+    drinks = Drink.query.all()
 
+    # 404 if no drinks
+    if len(drinks) == 0:
+        abort(404)
+
+    # format using .long()
+    drinks_long = [drink.long() for drink in drinks]
+
+    # return drinks
+    return jsonify({
+        'success': True,
+        'drinks': drinks_long
+    })
 
 '''
 @TODO implement endpoint
